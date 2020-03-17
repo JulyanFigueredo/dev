@@ -20,7 +20,17 @@ class RecipientController {
     }
     /** fim validação */
 
-    const recipientExists = await Recipient.findOne(req.body);
+    const recipientExists = await Recipient.findOne({
+      where: {
+        name: req.body.name,
+        street: req.body.street,
+        number: req.body.number,
+        complement: req.body.complement,
+        state: req.body.state,
+        city: req.body.city,
+        cep: req.body.cep,
+      },
+    });
 
     if (recipientExists) {
       return res.status(400).json({ error: 'Recipient already registered' });
