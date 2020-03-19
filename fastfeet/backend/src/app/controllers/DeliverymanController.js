@@ -1,4 +1,7 @@
 import * as Yup from 'yup'; /** biblioteca de validação de entrada de dados */
+import { Op } from 'sequelize';
+
+import { parseISO, subDays } from 'date-fns';
 
 import Deliveryman from '../models/Deliveryman';
 import Delivery from '../models/Delivery';
@@ -98,32 +101,6 @@ class DeliverymanController {
       email,
     });
   }
-
-  async deliveries(req, res) {
-    const deliveries = await Delivery.findAll({
-      where: { deliverymanId: req.params.id, endDate: null, canceledAt: null },
-    });
-
-    return res.json(deliveries);
-  }
-
-  async deliveriesDone(req, res) {
-    const deliveries = await Delivery.findAll({
-      where: { deliverymanId: req.params.id },
-    });
-
-    return res.json(deliveries);
-  }
-
-  async start(req, res) {
-    const delivery = await Delivery.findByPk(req.params.deliveryId);
-
-    const date = new Date();
-    delivery.update({ startDate: date });
-    return res.json(delivery);
-  }
-
-  async end(req, res) {}
 }
 
 export default new DeliverymanController();

@@ -1,25 +1,27 @@
 import Sequelize, { Model } from 'sequelize';
 
-class File extends Model {
+class DeliveryProblem extends Model {
   // metodo init é chamado automaticamente pelo sequlize, espera o objecto de conexao
   // com o banco chamado 'sequelize'
   static init(sequelize) {
     // super chama a classe pai
     super.init(
       {
-        name: Sequelize.STRING,
-        path: Sequelize.STRING,
-        url: {
-          type: Sequelize.VIRTUAL,
-          get() {
-            return `${process.env.APP_URL}/files/${this.path}`;
-          },
-        },
+        description: Sequelize.STRING,
+        deliveryId: Sequelize.INTEGER,
       },
       {
         sequelize,
       }
     );
   }
+
+  static associate(models) {
+    this.belongsTo(models.Delivery, {
+      foreignKey: 'deliveryId',
+      as: 'delivery',
+    });
+  }
 }
-export default File;
+
+export default DeliveryProblem;

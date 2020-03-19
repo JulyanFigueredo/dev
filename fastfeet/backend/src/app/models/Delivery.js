@@ -11,6 +11,9 @@ class Delivery extends Model {
         recipientId: Sequelize.INTEGER,
         deliverymanId: Sequelize.INTEGER,
         signatureId: Sequelize.INTEGER,
+        startDate: Sequelize.DATE,
+        endDate: Sequelize.DATE,
+        canceledAt: Sequelize.DATE,
       },
       {
         sequelize,

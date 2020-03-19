@@ -7,6 +7,8 @@ import SessionController from './app/controllers/SessionController';
 import RecipientController from './app/controllers/RecipientController';
 import DeliverymanController from './app/controllers/DeliverymanController';
 import DeliveryController from './app/controllers/DeliveryController';
+import WithdrawalController from './app/controllers/WithdrawalController';
+import DeliveryProblemController from './app/controllers/DeliveryProblemController';
 
 import FileController from './app/controllers/FileController';
 
@@ -20,19 +22,21 @@ routes.post('/users', UserController.store);
 routes.post('/sessions', SessionController.store);
 
 /** funcionalidades do entregador */
-routes.get('/deliveryman/:id/deliveries', DeliverymanController.deliveries);
-routes.get(
-  '/deliveryman/:id/deliveriesDone',
-  DeliverymanController.deliveriesDone
-);
+routes.get('/deliveryman/:id/deliveries', WithdrawalController.index);
+routes.get('/deliveryman/:id/deliveries', WithdrawalController.find);
+
 routes.put(
-  '/deliveryman/:id/deliveries/:deliveryId',
-  DeliverymanController.start
+  '/deliveryman/:deliverymanId/delivery/:deliveryId',
+  WithdrawalController.store
 );
-routes.put(
-  '/deliveryman/:id/deliveries/:deliveryId',
-  DeliverymanController.end
-);
+
+/** cancelar entrega com base no problema */
+routes.delete('/problem/:id/cancel-delivery', DeliveryProblemController.delete);
+
+/** delivery problems */
+routes.get('/delivery/problems', DeliveryProblemController.index);
+routes.get('/delivery/:id/problems', DeliveryProblemController.find);
+routes.post('/delivery/:id/problems', DeliveryProblemController.store);
 
 routes.use(authMiddleware);
 

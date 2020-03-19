@@ -25,12 +25,6 @@ class DeliveryController {
       return res.status(400).json({ message: 'Validation fails' });
     }
 
-    const hour = new Date().getHours();
-    if (hour < 8 || hour > 23) {
-      return res
-        .status(400)
-        .json({ message: 'Delivery start date must be between 8h to 18h' });
-    }
     /** fim validação */
 
     const {
