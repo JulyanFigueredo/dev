@@ -1,6 +1,7 @@
 import * as Yup from 'yup'; /** biblioteca de validação de entrada de dados */
 
 import User from '../models/User';
+import File from '../models/File';
 
 class UserController {
   async store(req, res) {
@@ -62,7 +63,9 @@ class UserController {
       const userExists = await User.findOne({ where: { email } });
 
       if (userExists) {
-        return res.status(400).json({ error: 'User already exists' });
+        return res
+          .status(400)
+          .json({ error: 'User already exists with that email' });
       }
     }
 
@@ -72,13 +75,23 @@ class UserController {
     }
 
     /** atualiza os campos com mesmo nome enviados pelo body  */
-    const { id, name, provider } = await user.update(req.body);
+    await user.update(req.body);
+    const { id, name, provider, avatar } = await User.findByPk(req.userId, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    });
 
     return res.json({
       id,
       name,
       email,
       provider,
+      avatar,
     });
   }
 }

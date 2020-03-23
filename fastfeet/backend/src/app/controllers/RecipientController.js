@@ -1,8 +1,25 @@
 import * as Yup from 'yup'; /** biblioteca de validação de entrada de dados */
-
+import { Op } from 'sequelize';
 import Recipient from '../models/Recipient';
 
 class RecipientController {
+  async index(req, res) {
+    const { q } = req.query;
+    if (q) {
+      const recipient = await Recipient.findAll({
+        where: {
+          name: {
+            [Op.iLike]: `${q}%`,
+          },
+        },
+      });
+      return res.json(recipient);
+    }
+
+    const recipient = await Recipient.findAll();
+    return res.json(recipient);
+  }
+
   async store(req, res) {
     /** validação de dados. Yup usa schema validation. Valida objecto pois req.body é objeto */
     const schema = Yup.object().shape({
@@ -49,51 +66,28 @@ class RecipientController {
     return res.json({ id, name, street, number, complement, state, city, cep });
   }
 
-  // async update(req, res) {
-  //   /** validação de dados. Yup usa schema validation. Valida objecto pois req.body é objeto */
-  //   const schema = Yup.object().shape({
-  //     name: Yup.string(),
-  //     street: Yup.string(),
-  //     number: Yup.string(),
-  //     complement: Yup.string(),
-  //     state: Yup.string(),
-  //     city: Yup.string(),
-  //     cep: Yup.string(),
-  //   });
+  async update(req, res) {
+    /** validação de dados. Yup usa schema validation. Valida objecto pois req.body é objeto */
+    const schema = Yup.object().shape({
+      name: Yup.string(),
+      street: Yup.string(),
+      number: Yup.string(),
+      complement: Yup.string(),
+      state: Yup.string(),
+      city: Yup.string(),
+      cep: Yup.string(),
+    });
 
-  //   if (!(await schema.isValid(req.body))) {
-  //     return res.status(400).json({ message: 'Validation fails' });
-  //   }
-  //   /** fim validação */
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ message: 'Validation fails' });
+    }
+    /** fim validação */
 
-  //   const { email, oldPassword } = req.body;
+    const recipient = await Recipient.findByPk(req.params.id);
 
-  //   const user = await User.findByPk(req.userId);
-
-  //   /** só tenta alterar email se tiver informado email na req */
-  //   if (email && email !== user.email) {
-  //     const userExists = await User.findOne({ where: { email } });
-
-  //     if (userExists) {
-  //       return res.status(400).json({ error: 'User already exists' });
-  //     }
-  //   }
-
-  //   /** só tenta alterar password se tiver informado oldpassword na req */
-  //   if (oldPassword && !(await user.checkPassword(oldPassword))) {
-  //     return res.status(401).json({ error: 'Password does not match' });
-  //   }
-
-  //   /** atualiza os campos com mesmo nome enviados pelo body  */
-  //   const { id, name, provider } = await user.update(req.body);
-
-  //   return res.json({
-  //     id,
-  //     name,
-  //     email,
-  //     provider,
-  //   });
-  // }
+    recipient.update(req.body);
+    return res.json(recipient);
+  }
 }
 
 export default new RecipientController();

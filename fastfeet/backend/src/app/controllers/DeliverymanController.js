@@ -81,6 +81,20 @@ class DeliverymanController {
   }
 
   async index(req, res) {
+    const { q } = req.query;
+    if (q) {
+      const deliveryman = await Deliveryman.findAll({
+        where: {
+          name: {
+            [Op.iLike]: `${q}%`,
+          },
+        },
+      });
+      if (deliveryman.length < 1) {
+        res.status(401).json({ message: 'No deliverymen registered' });
+      }
+      return res.json(deliveryman);
+    }
     const deliveryman = await Deliveryman.findAll();
     if (deliveryman.length < 1) {
       res.status(401).json({ message: 'No deliverymen registered' });

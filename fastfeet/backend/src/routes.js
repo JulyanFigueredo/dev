@@ -47,6 +47,8 @@ routes.post('/files', upload.single('file'), FileController.store);
 /** funcionalidades do administrador */
 routes.use(authAdminMiddleware);
 routes.post('/recipients', RecipientController.store);
+routes.get('/recipients', RecipientController.index);
+routes.put('/recipients/:id', RecipientController.update);
 
 /** Deliveryman */
 routes.post('/deliverymans', DeliverymanController.store);

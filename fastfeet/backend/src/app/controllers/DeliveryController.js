@@ -1,7 +1,8 @@
 import * as Yup from 'yup'; /** biblioteca de validação de entrada de dados */
-
+import { Op } from 'sequelize';
 import Delivery from '../models/Delivery';
 import Deliveryman from '../models/Deliveryman';
+import Recipient from '../models/Recipient';
 
 import Mail from '../../lib/Mail';
 
@@ -89,12 +90,62 @@ class DeliveryController {
   }
 
   async index(req, res) {
-    const delivery = await Delivery.findAll();
+    const { q } = req.query;
+
+    if (q) {
+      const delivery = await Delivery.findAll({
+        where: {
+          product: {
+            [Op.iLike]: `${q}%`,
+          },
+        },
+        include: [
+          {
+            model: Recipient,
+            as: 'recipient',
+            attributes: ['name'],
+          },
+          {
+            model: Deliveryman,
+            as: 'deliveryman',
+            attributes: ['name'],
+          },
+        ],
+      });
+      return res.json(delivery);
+    }
+    const delivery = await Delivery.findAll({
+      include: [
+        {
+          model: Recipient,
+          as: 'recipient',
+          attributes: ['name', 'city', 'state'],
+        },
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['name'],
+        },
+      ],
+    });
     return res.json(delivery);
   }
 
   async list(req, res) {
-    const delivery = await Delivery.findByPk(req.params.id);
+    const delivery = await Delivery.findByPk(req.params.id, {
+      include: [
+        {
+          model: Recipient,
+          as: 'recepient',
+          attributes: ['name'],
+        },
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['name'],
+        },
+      ],
+    });
     return res.json(delivery);
   }
 }
